@@ -3,6 +3,21 @@ import Photo from '../schema/photo.js';
 import User from '../schema/user.js';
 import { isValidObjectId, mapUserListItem } from './userController.js';
 
+function mapPhotoResponse(photo, userLookup = new Map()) {
+  return {
+    _id: photo._id.toString(),
+    user_id: photo.user_id.toString(),
+    file_name: photo.file_name,
+    date_time: photo.date_time,
+    comments: (photo.comments || []).map((comment) => ({
+      _id: comment._id.toString(),
+      comment: comment.comment,
+      date_time: comment.date_time,
+      user: userLookup.get(comment.user_id.toString()) || null,
+    })),
+  };
+}
+
 export async function getPhotosOfUser(req, res) {
   try {
     const userId = req.params.id;
@@ -33,20 +48,30 @@ export async function getPhotosOfUser(req, res) {
       users.map((user) => [user._id.toString(), mapUserListItem(user)]),
     );
 
-    const response = photos.map((photo) => ({
-      _id: photo._id.toString(),
-      user_id: photo.user_id.toString(),
-      file_name: photo.file_name,
-      date_time: photo.date_time,
-      comments: (photo.comments || []).map((comment) => ({
-        _id: comment._id.toString(),
-        comment: comment.comment,
-        date_time: comment.date_time,
-        user: userLookup.get(comment.user_id.toString()) || null,
-      })),
-    }));
+    const response = photos.map((photo) => mapPhotoResponse(photo, userLookup));
 
     return res.json(response);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+export async function createPhoto(req, res) {
+  try {
+    const trimmedUrl = req.body.url?.trim();
+
+    if (!trimmedUrl) {
+      return res.status(400).send('Photo URL is required');
+    }
+
+    const photo = await Photo.create({
+      file_name: trimmedUrl,
+      date_time: new Date(),
+      user_id: req.session.userId,
+      comments: [],
+    });
+
+    return res.status(201).json(mapPhotoResponse(photo));
   } catch (err) {
     return res.status(500).send(err.message);
   }

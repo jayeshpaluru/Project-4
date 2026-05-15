@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
-import React from 'react';
+import React, { useState } from 'react';
 import {
   QueryClient,
   QueryClientProvider,
@@ -27,6 +27,7 @@ import {
 
 import './styles/main.css';
 import TopBar from './components/TopBar';
+import AddPhotoDialog from './components/AddPhotoDialog';
 import UserDetail from './components/UserDetail';
 import UserList from './components/UserList';
 import UserPhotos from './components/UserPhotos';
@@ -75,6 +76,7 @@ function Root() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClientInstance = useQueryClient();
+  const [isAddPhotoOpen, setIsAddPhotoOpen] = useState(false);
 
   const { data: currentUser, isLoading: authLoading } = useQuery({
     queryKey: ['currentUser'],
@@ -84,6 +86,7 @@ function Root() {
   const logoutMutation = useMutation({
     mutationFn: logoutUser,
     onSuccess: () => {
+      setIsAddPhotoOpen(false);
       queryClientInstance.invalidateQueries({ queryKey: ['currentUser'] });
       queryClientInstance.invalidateQueries({ queryKey: ['users'] });
       queryClientInstance.invalidateQueries({ queryKey: ['user'] });
@@ -112,7 +115,11 @@ function Root() {
     <div>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <TopBar currentUser={currentUser} onLogout={logoutMutation.mutate} />
+          <TopBar
+            currentUser={currentUser}
+            onLogout={logoutMutation.mutate}
+            onOpenAddPhoto={() => setIsAddPhotoOpen(true)}
+          />
         </Grid>
         <div className="main-topbar-buffer" />
         {currentUser ? (
@@ -128,6 +135,13 @@ function Root() {
           </Paper>
         </Grid>
       </Grid>
+      {currentUser ? (
+        <AddPhotoDialog
+          currentUserId={currentUser._id}
+          onClose={() => setIsAddPhotoOpen(false)}
+          open={isAddPhotoOpen}
+        />
+      ) : null}
     </div>
   );
 }

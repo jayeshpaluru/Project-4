@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable import/extensions */
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -14,7 +15,7 @@ const app = express();
 
 // define these in env and import in this file
 const port = process.env.PORT || 3001;
-const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1/project3';
+const mongoUrl = process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://127.0.0.1/project4';
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000/index.html';
 const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 

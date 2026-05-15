@@ -95,7 +95,7 @@ function UserPhotos({ userId: userIdProp }) {
         <Card key={photo._id} className="user-photo-card" elevation={2}>
           <CardMedia
             component="img"
-            image={`/images/${photo.file_name}`}
+            image={photo.file_name}
             alt={`Uploaded by user ${photo.user_id}`}
           />
           <CardContent>
