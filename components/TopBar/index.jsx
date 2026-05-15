@@ -16,7 +16,7 @@ import api from '../../lib/api';
 
 import './styles.css';
 
-function TopBar({ currentUser, onLogout }) {
+function TopBar({ currentUser, onLogout, onOpenAddPhoto }) {
   const location = useLocation();
 
   const photoMatch = matchPath('/users/:userId/photos', location.pathname);
@@ -56,6 +56,9 @@ function TopBar({ currentUser, onLogout }) {
         </Typography>
         {currentUser ? (
           <>
+            <Button color="inherit" onClick={onOpenAddPhoto}>
+              Add Photo
+            </Button>
             <Typography className="topbar-greeting" variant="body1" color="inherit">
               Hi
               {' '}
@@ -76,6 +79,7 @@ TopBar.propTypes = {
     first_name: PropTypes.string.isRequired,
   }),
   onLogout: PropTypes.func.isRequired,
+  onOpenAddPhoto: PropTypes.func.isRequired,
 };
 
 export default TopBar;
