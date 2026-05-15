@@ -19,6 +19,7 @@ import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
+  useOutletContext,
   useParams,
   Navigate,
   useLocation,
@@ -151,7 +152,8 @@ function LoginRegisterRoute() {
 }
 
 function UserLayout() {
-  return <Outlet />;
+  const outletContext = useOutletContext();
+  return <Outlet context={outletContext} />;
 }
 
 const router = createBrowserRouter([
