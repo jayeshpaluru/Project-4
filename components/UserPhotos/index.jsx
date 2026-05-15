@@ -17,9 +17,17 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import {
+  Link as RouterLink,
+  useOutletContext,
+  useParams,
+} from 'react-router-dom';
 
-import api, { addComment, getApiErrorMessage } from '../../lib/api';
+import api, {
+  addComment,
+  getApiErrorMessage,
+  togglePhotoLike,
+} from '../../lib/api';
 
 import './styles.css';
 
@@ -37,6 +45,7 @@ function formatDateTime(value) {
 
 function UserPhotos({ userId: userIdProp }) {
   const { userId: userIdParam } = useParams();
+  const { currentUser } = useOutletContext();
   const userId = userIdProp || userIdParam;
 
   const [commentTexts, setCommentTexts] = useState({});
@@ -61,6 +70,13 @@ function UserPhotos({ userId: userIdProp }) {
     onError: (err, { photoId }) => {
       const updateErrors = { ...commentErrors, [photoId]: getApiErrorMessage(err) };
       setCommentErrors(updateErrors);
+    },
+  });
+
+  const toggleLikeMutation = useMutation({
+    mutationFn: togglePhotoLike,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['photos', userId] });
     },
   });
 
@@ -106,6 +122,22 @@ function UserPhotos({ userId: userIdProp }) {
                   Posted
                   {' '}
                   {formatDateTime(photo.date_time)}
+                </Typography>
+              </Box>
+
+              <Box className="user-photo-like-row">
+                <Button
+                  color={photo.likes?.includes(currentUser?._id) ? 'secondary' : 'primary'}
+                  disabled={toggleLikeMutation.isPending}
+                  onClick={() => toggleLikeMutation.mutate(photo._id)}
+                  variant={photo.likes?.includes(currentUser?._id) ? 'contained' : 'outlined'}
+                >
+                  {photo.likes?.includes(currentUser?._id) ? 'Unlike' : 'Like'}
+                </Button>
+                <Typography color="text.secondary" variant="body2">
+                  {photo.likes?.length || 0}
+                  {' '}
+                  {photo.likes?.length === 1 ? 'like' : 'likes'}
                 </Typography>
               </Box>
 

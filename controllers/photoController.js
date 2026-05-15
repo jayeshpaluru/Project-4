@@ -9,6 +9,7 @@ function mapPhotoResponse(photo, userLookup = new Map()) {
     user_id: photo.user_id.toString(),
     file_name: photo.file_name,
     date_time: photo.date_time,
+    likes: (photo.likes || []).map((userId) => userId.toString()),
     comments: (photo.comments || []).map((comment) => ({
       _id: comment._id.toString(),
       comment: comment.comment,
@@ -36,6 +37,7 @@ export async function getPhotosOfUser(req, res) {
         user_id: 1,
         file_name: 1,
         date_time: 1,
+        likes: 1,
         comments: 1,
       }).lean(),
       User.find({}, {
@@ -69,6 +71,7 @@ export async function createPhoto(req, res) {
       date_time: new Date(),
       user_id: req.session.userId,
       comments: [],
+      likes: [],
     });
 
     return res.status(201).json(mapPhotoResponse(photo));
@@ -110,6 +113,41 @@ export async function addCommentToPhoto(req, res) {
       comment: savedComment.comment,
       date_time: savedComment.date_time,
     });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+}
+
+export async function togglePhotoLike(req, res) {
+  try {
+    const { photoId } = req.params;
+    const currentUserId = req.session.userId;
+
+    if (!isValidObjectId(photoId)) {
+      return res.status(400).send('Invalid photo id');
+    }
+
+    const photo = await Photo.findById(photoId);
+    if (!photo) {
+      return res.status(404).send('Photo not found');
+    }
+
+    const currentUserIdString = currentUserId.toString();
+    const alreadyLiked = (photo.likes || []).some(
+      (likedUserId) => likedUserId.toString() === currentUserIdString,
+    );
+
+    if (alreadyLiked) {
+      photo.likes = photo.likes.filter(
+        (likedUserId) => likedUserId.toString() !== currentUserIdString,
+      );
+    } else {
+      photo.likes.push(currentUserId);
+    }
+
+    await photo.save();
+
+    return res.json(mapPhotoResponse(photo));
   } catch (err) {
     return res.status(500).send(err.message);
   }
