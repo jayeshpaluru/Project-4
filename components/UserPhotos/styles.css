@@ -10,6 +10,12 @@
   object-fit: cover;
 }
 
+.user-photo-like-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .user-photo-comment {
   padding: 10px 14px;
   border: 1px solid #ececec;
