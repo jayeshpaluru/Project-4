@@ -10,6 +10,10 @@
 - Login, logout, registration, and commenting on photos
 - Git/GitHub workflow per course spec (feature branches, PRs)
 
+## Deployment
+- Frontend (Vercel): https://project-4-f15g9c3x3-jayesh-palurus-projects.vercel.app/login-register
+- Backend (Render): https://project-4-s1qn.onrender.com
+
 ## Setup
 ```bash
 npm install
