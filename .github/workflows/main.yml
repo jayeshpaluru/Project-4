@@ -21,6 +21,8 @@ jobs:
 
       - name: Install, lint, and test backend
         working-directory: backend
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: |
           npm install
           npm run lint
