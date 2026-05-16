@@ -12,7 +12,7 @@
 
 ## Deployment
 - Frontend (Vercel): https://project-4-f15g9c3x3-jayesh-palurus-projects.vercel.app/login-register
-- Backend (Render): https://project-4-s1qn.onrender.com
+- Backend (Render): https://project-4-jx6m.onrender.com
 
 ## Setup
 ```bash
@@ -23,6 +23,8 @@ cd test && npm install && cd ..
 Copy your working Project 2 app into this tree if you are merging starter files from the course zip.
 
 **Database name:** `mongodb://127.0.0.1/project3` in `webServer.js` and `loadDatabase.js`.
+
+Use a real Atlas connection string via `MONGODB_URI` in your local `.env` and Render environment settings. Do not commit the actual credential-bearing URI to the repository.
 
 ```bash
 node loadDatabase.js
