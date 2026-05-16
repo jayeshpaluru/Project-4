@@ -18,6 +18,7 @@ const port = process.env.PORT || 3001;
 const mongoUrl = process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://127.0.0.1/project4';
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000/index.html';
 const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+const isProduction = process.env.NODE_ENV === 'production';
 
 // Enable CORS for frontend running on a different port
 app.use(cors({
@@ -25,13 +26,15 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+app.set('trust proxy', 1);
 app.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
   },
 }));
 
